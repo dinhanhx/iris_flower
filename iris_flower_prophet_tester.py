@@ -16,3 +16,8 @@ print(Y_predicted)
 
 print('human said: ')
 print(Y)
+
+## if the answers are different
+# Give it new food and save it
+#model.fit(X, Y)
+#pk.dump(model, open('iris_flower_prophet.pkl', 'wb'))
