@@ -2,18 +2,20 @@
 from pandas import read_csv # to real csv file to be loaded in an object
 from pandas.plotting import scatter_matrix # need this to plot an object in scatter matrix
 from matplotlib import pyplot # need this draw plot
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split # to create train and validation dataset
+# Accuracy estimations
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import StratifiedKFold
-from sklearn.metrics import classification_report
-from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
+# Modles
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
+# Save models
+import pickle as pk
 
 ## Load dataset
 names = ['sepal-length', 'sepal-width', 'petal-length', 'petal-width', 'class'];
@@ -44,5 +46,49 @@ print(dataset.groupby('class').size()) # Group all flowers in a class then print
 #pyplot.show()
 
 # Scatter matrix via pandas.plotting.scatter_matrix()
-scatter_matrix(dataset)
-pyplot.show()
+#scatter_matrix(dataset)
+#pyplot.show()
+
+## Create validation dataset
+arr = dataset.values
+X = arr[:,0:4] # Get all values from col 0 to 3
+Y = arr[:,4] # Get all values at col 4
+X_train, X_validation, Y_train, Y_validation = train_test_split(X, Y, test_size = 0.20, random_state = 1) # 20% to test, 80% to train, split randomly with random_state = 1
+
+## Input models
+models = []
+models.append(('LR', LogisticRegression(solver='liblinear', multi_class='ovr')))
+models.append(('LDA', LinearDiscriminantAnalysis()))
+models.append(('KNN', KNeighborsClassifier()))
+models.append(('CART', DecisionTreeClassifier()))
+models.append(('NB', GaussianNB()))
+models.append(('SVM', SVC(gamma='auto')))
+
+## Evaluate model in turn
+print('Model, mean score, standard deviation: ')
+results = []
+name_of_models = []
+for name, model in models:
+	k_fold = StratifiedKFold(n_splits = 10, random_state = 1, shuffle = True)
+	cross_val_results = cross_val_score(model, X_train, Y_train, cv = k_fold, scoring = 'accuracy')
+	results.append(cross_val_results)
+	name_of_models.append(model)
+	print('%s: %f (%f)' % (name, cross_val_results.mean(), cross_val_results.std()))
+
+print('Chose Support Vector Machines model')
+
+## Make predictions
+# Create chose model
+chose_model = SVC(gamma = 'auto')
+name_of_model = 'Supprot Vector Machine'
+
+# Give it foods and request from it
+chose_model.fit(X_train, Y_train)
+Y_predictions = chose_model.predict(X_validation)
+
+# Print out the accuracy score
+print('Accuracy score: ')
+print(accuracy_score(Y_validation, Y_predictions))
+
+## Save the chose model
+pk.dump(chose_model, open('iris_flower_prophet.pkl', 'wb'))
