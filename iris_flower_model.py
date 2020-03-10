@@ -1,5 +1,5 @@
-# Load libraries
-from pandas import read_csv
+## Load libraries
+from pandas import read_csv # to real csv file to be loaded in an object
 from pandas.plotting import scatter_matrix
 from matplotlib import pyplot
 from sklearn.model_selection import train_test_split
@@ -14,3 +14,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
+
+## Load dataset
+names = ['sepal-length', 'sepal-width', 'petal-length', 'petal-width', 'class'];
+# Attributes information can be read here https://archive.ics.uci.edu/ml/datasets/Iris
+dataset = read_csv('iris.csv', names = names)
