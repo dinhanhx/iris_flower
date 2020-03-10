@@ -40,5 +40,9 @@ print(dataset.groupby('class').size()) # Group all flowers in a class then print
 
 ## Visualize data
 # Histogram via hist() // 'hist()' is a method of object 'dataset'
-dataset.hist()
+#dataset.hist()
+#pyplot.show()
+
+# Scatter matrix via pandas.plotting.scatter_matrix()
+scatter_matrix(dataset)
 pyplot.show()
